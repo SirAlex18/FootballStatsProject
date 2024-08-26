@@ -7,7 +7,7 @@ namespace IntegrationToApi.Football_API
     public class IntegrationApi : IIntegrationApi
     {
         /// <summary>
-        /// Will get all stats of Oscar season 2023
+        /// Will get football stats for the player of your choice and decide the season as well.
         /// </summary>
         public async Task<List<PlayerData>> GetFootballStats(string key, string Id, string season)
         {
