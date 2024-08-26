@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="TestImplementation\**" />
+    <EmbeddedResource Remove="TestImplementation\**" />
+    <None Remove="TestImplementation\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="RestSharp" Version="111.4.1" />
   </ItemGroup>
 
