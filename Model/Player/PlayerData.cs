@@ -1,6 +1,6 @@
 ﻿namespace Player
 {
-    public class PlayerData
+    public class PlayerData : IPlayerData
     {
         public string? PlayerName { get; set; }
         public string? League { get; set; }
