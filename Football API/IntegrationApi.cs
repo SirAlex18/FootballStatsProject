@@ -1,6 +1,7 @@
 ﻿using RestSharp;
 using Player;
 using Model;
+using API.Models;
 
 namespace IntegrationToApi.Football_API
 {
@@ -9,13 +10,15 @@ namespace IntegrationToApi.Football_API
         /// <summary>
         /// Will get football stats for the player of your choice and decide the season as well.
         /// </summary>
-        public async Task<List<PlayerData>> GetFootballStats(string key, string Id, string season)
+        public async Task<List<PlayerData>> GetFootballStats(Config conf, PlayerInputData input)
         {
             var listOfFootballStats = new List<PlayerData>();
 
-            var apiClient = new RestClient(@"https://v3.football.api-sports.io");
-            var req = new RestRequest("/players?id=" + Id + @"&season=" + season);
-            req.AddHeader("x-apisports-key", key);
+            var endpoint = "/players?id=" + input.PlayerId + @"&season=" + input.YearOfSeason;
+
+            var apiClient = new RestClient(conf.EndPoint!);
+            var req = new RestRequest(endpoint);
+            req.AddHeader("x-apisports-key", conf.ApiKey!);
 
             var resp = await apiClient.GetAsync<Rootobject>(req);
             var content = resp!.Response;
