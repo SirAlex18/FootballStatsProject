@@ -29,4 +29,30 @@ public class PlayerService : IPlayerService
 
         return PlayerDataMapper.MapToPlayerData(responseItem, statistic);
     }
+
+    public async Task<List<IPlayerData>> GetPlayerStatsBulkAsync(IEnumerable<string> playerIds, string season)
+    {
+        var results = new List<IPlayerData>();
+        
+        foreach (var playerId in playerIds)
+        {
+            try
+            {
+                var input = new PlayerInputData { PlayerId = playerId, YearOfSeason = season };
+                var stats = await GetPlayerStatsAsync(input);
+                if (stats != null)
+                    results.Add(stats);
+                
+                // Small delay to respect external API rate limits during bulk requests
+                await Task.Delay(100); 
+            }
+            catch
+            {
+                // Skip failed requests for this player and continue processing others
+                continue;
+            }
+        }
+        
+        return results;
+    }
 }

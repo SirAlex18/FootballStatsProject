@@ -16,7 +16,7 @@ builder.Services.AddScoped<IPlayerService, PlayerService>();
 
 var app = builder.Build();
 
-// API Endpoint for Frontend
+// API Endpoint for Frontend - Single Player
 app.MapGet("/api/players/{id}/{season}", async (string id, string season, IPlayerService playerService) =>
 {
     // Input Validation
@@ -48,6 +48,28 @@ app.MapGet("/api/players/{id}/{season}", async (string id, string season, IPlaye
             statusCode: apiEx.StatusCode ?? 500,
             extensions: new Dictionary<string, object?> { ["errorCode"] = apiEx.ErrorCode }
         );
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(detail: ex.Message, statusCode: 500);
+    }
+});
+
+// API Endpoint for Frontend - Bulk Players
+app.MapGet("/api/players/bulk", async (string? ids, string season, IPlayerService playerService) =>
+{
+    if (string.IsNullOrWhiteSpace(ids))
+        return Results.BadRequest("Missing 'ids' query parameter. Format: ?ids=1,2,3");
+
+    if (string.IsNullOrWhiteSpace(season) || season.Length != 4 || !int.TryParse(season, out _))
+        return Results.BadRequest("Invalid Season Year. Must be a 4-digit year.");
+
+    var playerIdList = ids.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    
+    try
+    {
+        var playerStatsList = await playerService.GetPlayerStatsBulkAsync(playerIdList, season);
+        return Results.Ok(playerStatsList);
     }
     catch (Exception ex)
     {
