@@ -1,4 +1,5 @@
-﻿namespace Model;
+namespace Model;
+
 public class Rootobject
 {
     public string? Get { get; set; }
@@ -85,7 +86,8 @@ public class League
 
 public class Games
 {
-    public int? Appearences { get; set; }
+    [JsonPropertyName("appearances")]
+    public int? Appearances { get; set; }
     public int? Lineups { get; set; }
     public int? Minutes { get; set; }
     public object? Number { get; set; }
@@ -138,7 +140,8 @@ public class Duels
 public class Dribbles
 {
     public int? Attempts { get; set; }
-    public int? Success { get; set; }
+    [JsonPropertyName("success")]
+    public int? SuccessfulDribbles { get; set; }
     public object? Past { get; set; }
 }
 

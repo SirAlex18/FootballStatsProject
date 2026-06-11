@@ -28,6 +28,16 @@ public class IntegrationApi : IIntegrationApi
         request.AddHeader("x-rapidapi-key", _apiKey);
 
         var response = await _client.GetAsync<Rootobject>(request);
-        return response;
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new ApiException(
+                $"API request failed with status code: {response.StatusCode}. Content: {response.Content}",
+                (int?)response.StatusCode,
+                "HTTP_ERROR"
+            );
+        }
+
+        return response.Data;
     }
 }

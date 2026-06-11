@@ -31,6 +31,19 @@ var playerService = scope.ServiceProvider.GetRequiredService<IPlayerService>();
 string playerId = args.Length > 0 ? args[0] : "154";
 string yearOfSeason = args.Length > 1 ? args[1] : "2024";
 
+// Basic Input Validation
+if (string.IsNullOrWhiteSpace(playerId) || !int.TryParse(playerId, out _))
+{
+    Console.WriteLine("❌ Invalid Player ID. Please provide a numeric ID.");
+    return;
+}
+
+if (string.IsNullOrWhiteSpace(yearOfSeason) || yearOfSeason.Length != 4 || !int.TryParse(yearOfSeason, out _))
+{
+    Console.WriteLine("❌ Invalid Season Year. Please provide a 4-digit year (e.g., 2023).");
+    return;
+}
+
 var inputData = new PlayerInputData 
 { 
     PlayerId = playerId,
@@ -39,7 +52,7 @@ var inputData = new PlayerInputData
 
 try
 {
-    Console.WriteLine($"Fetching player stats for ID: {playerId}, Season: {yearOfSeason}...");
+    Console.WriteLine($"🔍 Fetching player stats for ID: {playerId}, Season: {yearOfSeason}...");
     var playerStats = await playerService.GetPlayerStatsAsync(inputData);
     
     if (playerStats != null)
@@ -53,10 +66,14 @@ try
         Console.WriteLine("⚠️ No stats found for the provided player/season.");
     }
 }
+catch (ApiException apiEx)
+{
+    Console.WriteLine($"❌ API Error [{apiEx.ErrorCode ?? "UNKNOWN"}]: {apiEx.Message}");
+}
 catch (Exception ex)
 {
-    Console.WriteLine($"❌ Error fetching player stats: {ex.Message}");
+    Console.WriteLine($"❌ Unexpected Error: {ex.Message}");
 }
 
-Console.WriteLine("Press any key to exit...");
+Console.WriteLine("\nPress any key to exit...");
 Console.ReadKey();
