@@ -22,7 +22,7 @@ public class IntegrationApi : IIntegrationApi
 
     public async Task<Rootobject?> GetPlayerDataAsync(IPlayerInputData input)
     {
-        var request = new RestRequest("/football/v4/players", Method.Get);
+        var request = new RestRequest("/players", Method.Get);
         request.AddQueryParameter("id", input.PlayerId);
         request.AddQueryParameter("season", input.YearOfSeason);
         request.AddHeader("x-rapidapi-key", _apiKey);

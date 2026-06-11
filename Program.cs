@@ -28,8 +28,8 @@ using var scope = serviceProvider.CreateScope();
 var playerService = scope.ServiceProvider.GetRequiredService<IPlayerService>();
 
 // Get player ID and season from command-line arguments or use defaults
-string playerId = args.Length > 0 ? args[0] : "12345";
-string yearOfSeason = args.Length > 1 ? args[1] : "2023";
+string playerId = args.Length > 0 ? args[0] : "154";
+string yearOfSeason = args.Length > 1 ? args[1] : "2024";
 
 var inputData = new PlayerInputData 
 { 
