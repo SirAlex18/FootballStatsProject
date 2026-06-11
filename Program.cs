@@ -1,79 +1,58 @@
 using API.Integration;
 using API.Models;
 using API.Services;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Player;
 
-var services = new ServiceCollection();
+var builder = WebApplication.CreateBuilder(args);
 
-// Configuration
-var config = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-    .Build();
-
-services.Configure<Config>(config.GetSection("ApiConfig"));
-services.AddSingleton<IConfig>(sp => sp.GetRequiredService<IOptions<Config>>().Value);
+// Configuration is automatically loaded from appsettings.json by the Web SDK
+builder.Services.Configure<Config>(builder.Configuration.GetSection("ApiConfig"));
+builder.Services.AddSingleton<IConfig>(sp => sp.GetRequiredService<IOptions<Config>>().Value);
 
 // Register Services
-services.AddScoped<IIntegrationApi, IntegrationApi>();
-services.AddScoped<IPlayerService, PlayerService>();
+builder.Services.AddScoped<IIntegrationApi, IntegrationApi>();
+builder.Services.AddScoped<IPlayerService, PlayerService>();
 
-var serviceProvider = services.BuildServiceProvider();
+var app = builder.Build();
 
-// Example usage
-using var scope = serviceProvider.CreateScope();
-var playerService = scope.ServiceProvider.GetRequiredService<IPlayerService>();
-
-// Get player ID and season from command-line arguments or use defaults
-string playerId = args.Length > 0 ? args[0] : "154";
-string yearOfSeason = args.Length > 1 ? args[1] : "2024";
-
-// Basic Input Validation
-if (string.IsNullOrWhiteSpace(playerId) || !int.TryParse(playerId, out _))
+// API Endpoint for Frontend
+app.MapGet("/api/players/{id}/{season}", async (string id, string season, IPlayerService playerService) =>
 {
-    Console.WriteLine("❌ Invalid Player ID. Please provide a numeric ID.");
-    return;
-}
-
-if (string.IsNullOrWhiteSpace(yearOfSeason) || yearOfSeason.Length != 4 || !int.TryParse(yearOfSeason, out _))
-{
-    Console.WriteLine("❌ Invalid Season Year. Please provide a 4-digit year (e.g., 2023).");
-    return;
-}
-
-var inputData = new PlayerInputData 
-{ 
-    PlayerId = playerId,
-    YearOfSeason = yearOfSeason 
-};
-
-try
-{
-    Console.WriteLine($"🔍 Fetching player stats for ID: {playerId}, Season: {yearOfSeason}...");
-    var playerStats = await playerService.GetPlayerStatsAsync(inputData);
+    // Input Validation
+    if (string.IsNullOrWhiteSpace(id) || !int.TryParse(id, out _))
+        return Results.BadRequest("Invalid Player ID. Must be numeric.");
     
-    if (playerStats != null)
-    {
-        Console.WriteLine($"✅ Successfully retrieved stats for: {playerStats.PlayerName}");
-        Console.WriteLine($"📊 League: {playerStats.League} ({playerStats.LeagueCountryOfOrigin})");
-        Console.WriteLine($"👟 Appearances: {playerStats.Appearances}, Goals: {playerStats.Goals}, Passes: {playerStats.Passes}");
-    }
-    else
-    {
-        Console.WriteLine("⚠️ No stats found for the provided player/season.");
-    }
-}
-catch (ApiException apiEx)
-{
-    Console.WriteLine($"❌ API Error [{apiEx.ErrorCode ?? "UNKNOWN"}]: {apiEx.Message}");
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"❌ Unexpected Error: {ex.Message}");
-}
+    if (string.IsNullOrWhiteSpace(season) || season.Length != 4 || !int.TryParse(season, out _))
+        return Results.BadRequest("Invalid Season Year. Must be a 4-digit year.");
 
-Console.WriteLine("\nPress any key to exit...");
-Console.ReadKey();
+    var inputData = new PlayerInputData 
+    { 
+        PlayerId = id,
+        YearOfSeason = season 
+    };
+
+    try
+    {
+        var playerStats = await playerService.GetPlayerStatsAsync(inputData);
+        
+        if (playerStats != null)
+            return Results.Ok(playerStats);
+            
+        return Results.NotFound("No stats found for the provided player/season.");
+    }
+    catch (ApiException apiEx)
+    {
+        return Results.Problem(
+            detail: apiEx.Message,
+            statusCode: apiEx.StatusCode ?? 500,
+            extensions: new Dictionary<string, object?> { ["errorCode"] = apiEx.ErrorCode }
+        );
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(detail: ex.Message, statusCode: 500);
+    }
+});
+
+app.Run();
