@@ -52,61 +52,78 @@ public class PlayerService : IPlayerService
 
     private async Task SaveToDatabaseAsync(IPlayerData stats, string playerId, string season)
     {
-        try
+        const int maxRetries = 3;
+        
+        for (int attempt = 0; attempt < maxRetries; attempt++)
         {
-            // Create a new scope for the background task to safely access DbContext
-            using var scope = _scopeFactory.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<FootballStatsContext>();
-            
-            var existing = await context.PlayerStats
-                .FirstOrDefaultAsync(p => p.PlayerId == playerId && p.Season == season);
+            try
+            {
+                // Create a new scope for the background task to safely access DbContext
+                using var scope = _scopeFactory.CreateScope();
+                var context = scope.ServiceProvider.GetRequiredService<FootballStatsContext>();
+                
+                var existing = await context.PlayerStats
+                    .FirstOrDefaultAsync(p => p.PlayerId == playerId && p.Season == season);
 
-            if (existing != null)
-            {
-                // Update existing record
-                existing.PlayerName = stats.PlayerName ?? existing.PlayerName;
-                existing.League = stats.League ?? existing.League;
-                existing.LeagueCountryOfOrigin = stats.LeagueCountryOfOrigin ?? existing.LeagueCountryOfOrigin;
-                existing.Appearances = stats.Appearances ?? existing.Appearances;
-                existing.Minutes = stats.Minutes ?? existing.Minutes;
-                existing.TotalShots = stats.TotalShots ?? existing.TotalShots;
-                existing.TotalShotsOnTarget = stats.TotalShotsOnTarget ?? existing.TotalShotsOnTarget;
-                existing.Goals = stats.Goals ?? existing.Goals;
-                existing.Passes = stats.Passes ?? existing.Passes;
-                existing.PassAccuracy = stats.PassAccuracy ?? existing.PassAccuracy;
-                existing.DribblesAttempts = stats.DribblesAttempts ?? existing.DribblesAttempts;
-                existing.SuccessfulDribbles = stats.SuccessfulDribbles ?? existing.SuccessfulDribbles;
-                existing.FetchedAt = DateTime.UtcNow;
-            }
-            else
-            {
-                // Insert new record
-                await context.PlayerStats.AddAsync(new PlayerStat
+                if (existing != null)
                 {
-                    PlayerId = playerId,
-                    Season = season,
-                    PlayerName = stats.PlayerName ?? "Unknown",
-                    League = stats.League ?? string.Empty,
-                    LeagueCountryOfOrigin = stats.LeagueCountryOfOrigin ?? string.Empty,
-                    Appearances = stats.Appearances,
-                    Minutes = stats.Minutes,
-                    TotalShots = stats.TotalShots,
-                    TotalShotsOnTarget = stats.TotalShotsOnTarget,
-                    Goals = stats.Goals,
-                    Passes = stats.Passes,
-                    PassAccuracy = stats.PassAccuracy,
-                    DribblesAttempts = stats.DribblesAttempts,
-                    SuccessfulDribbles = stats.SuccessfulDribbles,
-                    FetchedAt = DateTime.UtcNow
-                });
-            }
+                    // Update existing record
+                    existing.PlayerName = stats.PlayerName ?? existing.PlayerName;
+                    existing.League = stats.League ?? existing.League;
+                    existing.LeagueCountryOfOrigin = stats.LeagueCountryOfOrigin ?? existing.LeagueCountryOfOrigin;
+                    existing.Appearances = stats.Appearances ?? existing.Appearances;
+                    existing.Minutes = stats.Minutes ?? existing.Minutes;
+                    existing.TotalShots = stats.TotalShots ?? existing.TotalShots;
+                    existing.TotalShotsOnTarget = stats.TotalShotsOnTarget ?? existing.TotalShotsOnTarget;
+                    existing.Goals = stats.Goals ?? existing.Goals;
+                    existing.Passes = stats.Passes ?? existing.Passes;
+                    existing.PassAccuracy = stats.PassAccuracy ?? existing.PassAccuracy;
+                    existing.DribblesAttempts = stats.DribblesAttempts ?? existing.DribblesAttempts;
+                    existing.SuccessfulDribbles = stats.SuccessfulDribbles ?? existing.SuccessfulDribbles;
+                    existing.FetchedAt = DateTime.UtcNow;
+                }
+                else
+                {
+                    // Insert new record
+                    await context.PlayerStats.AddAsync(new PlayerStat
+                    {
+                        PlayerId = playerId,
+                        Season = season,
+                        PlayerName = stats.PlayerName ?? "Unknown",
+                        League = stats.League ?? string.Empty,
+                        LeagueCountryOfOrigin = stats.LeagueCountryOfOrigin ?? string.Empty,
+                        Appearances = stats.Appearances,
+                        Minutes = stats.Minutes,
+                        TotalShots = stats.TotalShots,
+                        TotalShotsOnTarget = stats.TotalShotsOnTarget,
+                        Goals = stats.Goals,
+                        Passes = stats.Passes,
+                        PassAccuracy = stats.PassAccuracy,
+                        DribblesAttempts = stats.DribblesAttempts,
+                        SuccessfulDribbles = stats.SuccessfulDribbles,
+                        FetchedAt = DateTime.UtcNow
+                    });
+                }
 
-            await context.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            // Log silently to avoid crashing the HTTP request
-            _logger.LogError(ex, "Failed to save player stats for ID: {PlayerId}, Season: {Season}", playerId, season);
+                await context.SaveChangesAsync();
+                
+                // Success: exit retry loop
+                return;
+            }
+            catch (Exception ex)
+            {
+                if (attempt == maxRetries - 1)
+                {
+                    _logger.LogError(ex, "Failed to save player stats for ID: {PlayerId}, Season: {Season} after {MaxRetries} retries.", playerId, season, maxRetries);
+                }
+                else
+                {
+                    // Exponential backoff before retry (1s, 2s, 4s)
+                    var delay = TimeSpan.FromSeconds(Math.Pow(2, attempt));
+                    _logger.LogWarning(ex, "DB save failed for ID: {PlayerId}, Season: {Season}. Retrying in {Delay}ms...", playerId, season, delay.TotalMilliseconds);
+                    await Task.Delay(delay);
+                }
+            }
         }
     }
 
