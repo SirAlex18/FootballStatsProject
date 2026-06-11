@@ -27,16 +27,19 @@ var serviceProvider = services.BuildServiceProvider();
 using var scope = serviceProvider.CreateScope();
 var playerService = scope.ServiceProvider.GetRequiredService<IPlayerService>();
 
-// Create sample input data for testing
+// Get player ID and season from command-line arguments or use defaults
+string playerId = args.Length > 0 ? args[0] : "12345";
+string yearOfSeason = args.Length > 1 ? args[1] : "2023";
+
 var inputData = new PlayerInputData 
 { 
-    PlayerId = "12345", // TODO: Replace with a valid player ID from the API
-    YearOfSeason = "2023" 
+    PlayerId = playerId,
+    YearOfSeason = yearOfSeason 
 };
 
 try
 {
-    Console.WriteLine("Fetching player stats...");
+    Console.WriteLine($"Fetching player stats for ID: {playerId}, Season: {yearOfSeason}...");
     var playerStats = await playerService.GetPlayerStatsAsync(inputData);
     
     if (playerStats != null)
