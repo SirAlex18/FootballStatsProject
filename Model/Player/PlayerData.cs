@@ -1,11 +1,11 @@
-﻿namespace Player
+namespace Player
 {
     public class PlayerData : IPlayerData
     {
         public string? PlayerName { get; set; }
         public string? League { get; set; }
         public string? LeagueCountryOfOrigin { get; set; }
-        public int? Appeareances { get; set; }
+        public int? Appearances { get; set; }
         public int? Minutes { get; set; }
         public int? TotalShots { get; set; }
         public int? TotalShotsOnTarget { get; set; }
@@ -13,6 +13,6 @@
         public int? Passes { get; set; }
         public int? PassAccuracy { get; set; }
         public int? DribblesAttempts { get; set; }
-        public int? SuccesfulDribbles { get; set; }
+        public int? SuccessfulDribbles { get; set; }
     }
 }

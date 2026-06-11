@@ -21,7 +21,7 @@ public static class PlayerDataMapper
             PlayerName = name,
             League = leagueName,
             LeagueCountryOfOrigin = leagueCountry,
-            Appeareances = statistic.Games?.Appearences,
+            Appearances = statistic.Games?.Appearances,
             Minutes = statistic.Games?.Minutes,
             TotalShots = statistic.Shots?.Total,
             TotalShotsOnTarget = statistic.Shots?.On,
@@ -29,7 +29,7 @@ public static class PlayerDataMapper
             Passes = statistic.Passes?.Total,
             PassAccuracy = statistic.Passes?.Accuracy,
             DribblesAttempts = statistic.Dribbles?.Attempts,
-            SuccesfulDribbles = statistic.Dribbles?.Success
+            SuccessfulDribbles = statistic.Dribbles?.SuccessfulDribbles
         };
     }
 }

@@ -59,7 +59,7 @@ try
     {
         Console.WriteLine($"✅ Successfully retrieved stats for: {playerStats.PlayerName}");
         Console.WriteLine($"📊 League: {playerStats.League} ({playerStats.LeagueCountryOfOrigin})");
-        Console.WriteLine($"👟 Appearances: {playerStats.Appeareances}, Goals: {playerStats.Goals}, Passes: {playerStats.Passes}");
+        Console.WriteLine($"👟 Appearances: {playerStats.Appearances}, Goals: {playerStats.Goals}, Passes: {playerStats.Passes}");
     }
     else
     {
