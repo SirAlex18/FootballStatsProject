@@ -1,6 +1,8 @@
+using API.Data;
 using API.Integration;
 using API.Models;
 using API.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Player;
 
@@ -9,6 +11,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Configuration is automatically loaded from appsettings.json by the Web SDK
 builder.Services.Configure<Config>(builder.Configuration.GetSection("ApiConfig"));
 builder.Services.AddSingleton<IConfig>(sp => sp.GetRequiredService<IOptions<Config>>().Value);
+
+// Register EF Core with PostgreSQL
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
+                      ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+builder.Services.AddDbContext<FootballStatsContext>(options =>
+    options.UseNpgsql(connectionString));
 
 // Register Services
 builder.Services.AddScoped<IIntegrationApi, IntegrationApi>();
@@ -19,7 +27,6 @@ var app = builder.Build();
 // API Endpoint for Frontend - Single Player
 app.MapGet("/api/players/{id}/{season}", async (string id, string season, IPlayerService playerService) =>
 {
-    // Input Validation
     if (string.IsNullOrWhiteSpace(id) || !int.TryParse(id, out _))
         return Results.BadRequest("Invalid Player ID. Must be numeric.");
     
