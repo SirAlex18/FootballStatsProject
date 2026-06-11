@@ -2,7 +2,7 @@
 {
     public interface IPlayerData
     {
-        int? Appearences { get; set; }
+        int? Appeareances { get; set; }
         int? DribblesAttempts { get; set; }
         int? Goals { get; set; }
         string? League { get; set; }

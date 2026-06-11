@@ -5,7 +5,7 @@
         public string? PlayerName { get; set; }
         public string? League { get; set; }
         public string? LeagueCountryOfOrigin { get; set; }
-        public int? Appearences { get; set; }
+        public int? Appeareances { get; set; }
         public int? Minutes { get; set; }
         public int? TotalShots { get; set; }
         public int? TotalShotsOnTarget { get; set; }

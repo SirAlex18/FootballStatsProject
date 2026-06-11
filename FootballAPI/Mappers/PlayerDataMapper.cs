@@ -21,7 +21,7 @@ public static class PlayerDataMapper
             PlayerName = name,
             League = leagueName,
             LeagueCountryOfOrigin = leagueCountry,
-            Appearences = statistic.Games?.Appearences,
+            Appeareances = statistic.Games?.Appearences,
             Minutes = statistic.Games?.Minutes,
             TotalShots = statistic.Shots?.Total,
             TotalShotsOnTarget = statistic.Shots?.On,
