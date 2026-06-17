@@ -34,12 +34,15 @@ A modern football statistics platform featuring a high-performance .NET 9 Web AP
    DB_PASSWORD=your_secure_password_here
    RAPIDAPI_KEY=your_actual_rapidapi_key_here
    ```
-3. **Scaffold React Frontend** (Vite + TypeScript + Tailwind CSS)
-4. **Local Docker Testing**
+3. **Docker Testing of Back-end** (with quick Blazor frontend)
+   - Goal: Verify backend deployment works as intended and Docker configuration is solid.
+   - Action: Scaffold a minimal Blazor app to serve as a temporary front-end for API validation. This will be replaced later in steps 4 & 5.
+4. **Scaffold React Frontend** (Vite + TypeScript + Tailwind CSS)
+5. **Local Docker Testing**
    ```bash
    docker compose -f docker/docker-compose.yml up --build
    ```
-5. **Cloud Deployment Prep** (Azure/AWS/GCP, CI/CD pipeline setup)
+6. **Cloud Deployment Prep** (Azure/AWS/GCP, CI/CD pipeline setup)
 
 ## 📝 Notes & Best Practices
 - Backend is graded **9/10**. Ready for frontend integration.
@@ -48,4 +51,4 @@ A modern football statistics platform featuring a high-performance .NET 9 Web AP
 - Database indexes on `(PlayerId, Season)` ensure fast lookups.
 
 ## 🔜 Next Immediate Step
-Reply with `"Scaffold React frontend"` or `"Guide me through docker compose up"` to continue development.
+Reply with `"Apply Database Migrations"` or `"Configure Secrets"` to continue development.
