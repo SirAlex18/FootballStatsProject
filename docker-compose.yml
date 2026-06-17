@@ -8,11 +8,15 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - DB_CONNECTION_STRING=Host=db;Port=5432;Database=footballstats;Username=postgres;Password=${DB_PASSWORD}
-      - RAPIDAPI_KEY=${RAPIDAPI_KEY}
+      # .NET Configuration System expects this exact naming convention to override appsettings.json
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=footballstats;Username=postgres;Password=${DB_PASSWORD}
+      - ApiConfig__ApiKey=${RAPIDAPI_KEY}
+      - ApiConfig__EndPoint=https://v3.football.api-sports.io
+      - ASPNETCORE_ENVIRONMENT=Production
     depends_on:
       db:
         condition: service_healthy
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 30s
@@ -27,6 +31,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s

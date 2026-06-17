@@ -1,0 +1,2 @@
+docker pull mcr.microsoft.com/dotnet/aspnet:9.0
+docker pull postgres:16-alpine
