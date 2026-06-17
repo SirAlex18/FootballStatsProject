@@ -1,0 +1,9 @@
+# Load the images into Docker's local cache
+docker load -i football-api.tar
+docker load -i postgres-db.tar
+
+# Verify they're loaded
+docker images | grep -E "football-api|postgres"
+
+# Run your stack (no internet required)
+docker compose up --build

@@ -1,0 +1,6 @@
+# Build your API image locally
+docker build -t football-api .
+
+# Save both the API and PostgreSQL images to tarballs
+docker save -o football-api.tar football-api
+docker save -o postgres-db.tar postgres:16-alpine
