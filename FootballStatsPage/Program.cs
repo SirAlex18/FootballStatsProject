@@ -11,11 +11,20 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// Standard .NET 9 Blazor Server pipeline
-app.UseHttpsRedirection();
+// 1. Serve static files FIRST. This ensures _framework assets are accessible before routing/hub logic.
 app.UseStaticFiles();
-app.UseRouting();
 
+// 2. Skip HTTPS redirection in Development. Self-signed cert loops often strip request paths, causing 404s for framework files.
+if (app.Environment.IsDevelopment())
+{
+    // Local dev runs cleanly on HTTP/HTTPS without redirect interference
+}
+else
+{
+    app.UseHttpsRedirection();
+}
+
+app.UseRouting();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
