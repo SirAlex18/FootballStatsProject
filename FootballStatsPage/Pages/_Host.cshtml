@@ -17,7 +17,7 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
-    <!-- Absolute path bypasses base-href resolution quirks in .NET 9 minimal hosting -->
-    <script src="/blazor.web.js"></script>
+    <!-- Corrected path: must include _framework/ to match ASP.NET Core's runtime structure -->
+    <script src="_framework/blazor.web.js"></script>
 </body>
 </html>
