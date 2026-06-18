@@ -1,0 +1,24 @@
+@page "/"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Football Stats</title>
+    <base href="/" />
+    <!-- Switched to Cloudflare CDN to avoid Edge tracking prevention warnings -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" />
+</head>
+<body>
+    <app>
+        <component type="typeof(App)" render-mode="ServerPrerendered" />
+    </app>
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <!-- Use absolute path to prevent base-href resolution issues during local debugging -->
+    <script src="/_framework/blazor.web.js"></script>
+</body>
+</html>
