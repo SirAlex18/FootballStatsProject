@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Football Stats</title>
     <base href="/" />
-    <!-- Local Bootstrap to avoid CDN tracking prevention & network dependency during dev -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" />
 </head>
 <body>
@@ -18,7 +17,7 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
-    <!-- Absolute path ensures correct resolution regardless of launch profile (HTTP vs HTTPS) -->
-    <script src="/_framework/blazor.web.js"></script>
+    <!-- Relative path ensures correct resolution across HTTP/HTTPS and IDE launch profiles -->
+    <script src="_framework/blazor.web.js"></script>
 </body>
 </html>
