@@ -11,11 +11,10 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// .NET 9+ requires this middleware to serve dynamically generated _framework files
-app.UseBlazorFrameworkFiles();
+// Standard .NET 9 Blazor Server pipeline. 
+// Framework files are served automatically by the built-in Blazor middleware.
 app.UseStaticFiles();
 app.UseRouting();
-
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
