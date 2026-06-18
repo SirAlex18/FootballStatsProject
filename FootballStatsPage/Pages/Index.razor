@@ -1,5 +1,6 @@
- @page "/"
+@page "/"
 @using System.Net.Http.Json
+@inject IConfiguration Configuration
 
 <PageTitle>Football Stats Lookup</PageTitle>
 
@@ -59,8 +60,9 @@ else if (stats != null)
         stats = null;
         try
         {
+            var baseUrl = Configuration.GetValue<string>("ApiSettings:BaseUrl") ?? "http://localhost:5000";
             using var http = new HttpClient();
-            http.BaseAddress = new Uri("http://localhost:5000/"); // Docker host port
+            http.BaseAddress = new Uri(baseUrl);
             var response = await http.GetFromJsonAsync<dynamic>($"/api/players/{playerId}/{season}");
             stats = response;
         }
