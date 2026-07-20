@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Model;
 
 public class Rootobject

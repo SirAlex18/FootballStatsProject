@@ -1,27 +1,92 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Actually, I notice that in the user%27s `FootballStatsPage\**" />
+    <Compile Remove="But wait! Look at `FootballStatsPage\**" />
+    <Compile Remove="database\**" />
+    <Compile Remove="Docker\**" />
     <Compile Remove="FootballStatsPage\**" />
+    <Compile Remove="Let%27s check `FootballStatsPage\**" />
+    <Compile Remove="Once this runs, your Task 1 &amp; 2 are effectively merged into one automated step. You can update `Plan\**" />
+    <Compile Remove="Plan\**" />
+    <Compile Remove="Readme\**" />
     <Compile Remove="TestImplementation\**" />
+    <Compile Remove="Wait! I notice `FootballStatsPage\**" />
+    <Compile Remove="Wait! I see `FootballStatsPage\**" />
+    <Compile Remove="Wait! Look at `FootballStatsPage\**" />
+    <Content Remove="Actually, I notice that in the user%27s `FootballStatsPage\**" />
+    <Content Remove="But wait! Look at `FootballStatsPage\**" />
+    <Content Remove="database\**" />
+    <Content Remove="Docker\**" />
+    <Content Remove="FootballStatsPage\**" />
+    <Content Remove="Let%27s check `FootballStatsPage\**" />
+    <Content Remove="Once this runs, your Task 1 &amp; 2 are effectively merged into one automated step. You can update `Plan\**" />
+    <Content Remove="Plan\**" />
+    <Content Remove="Readme\**" />
+    <Content Remove="Wait! I notice `FootballStatsPage\**" />
+    <Content Remove="Wait! I see `FootballStatsPage\**" />
+    <Content Remove="Wait! Look at `FootballStatsPage\**" />
+    <EmbeddedResource Remove="Actually, I notice that in the user%27s `FootballStatsPage\**" />
+    <EmbeddedResource Remove="But wait! Look at `FootballStatsPage\**" />
+    <EmbeddedResource Remove="database\**" />
+    <EmbeddedResource Remove="Docker\**" />
     <EmbeddedResource Remove="FootballStatsPage\**" />
+    <EmbeddedResource Remove="Let%27s check `FootballStatsPage\**" />
+    <EmbeddedResource Remove="Once this runs, your Task 1 &amp; 2 are effectively merged into one automated step. You can update `Plan\**" />
+    <EmbeddedResource Remove="Plan\**" />
+    <EmbeddedResource Remove="Readme\**" />
     <EmbeddedResource Remove="TestImplementation\**" />
+    <EmbeddedResource Remove="Wait! I notice `FootballStatsPage\**" />
+    <EmbeddedResource Remove="Wait! I see `FootballStatsPage\**" />
+    <EmbeddedResource Remove="Wait! Look at `FootballStatsPage\**" />
+    <None Remove="Actually, I notice that in the user%27s `FootballStatsPage\**" />
+    <None Remove="But wait! Look at `FootballStatsPage\**" />
+    <None Remove="database\**" />
+    <None Remove="Docker\**" />
     <None Remove="FootballStatsPage\**" />
+    <None Remove="Let%27s check `FootballStatsPage\**" />
+    <None Remove="Once this runs, your Task 1 &amp; 2 are effectively merged into one automated step. You can update `Plan\**" />
+    <None Remove="Plan\**" />
+    <None Remove="Readme\**" />
     <None Remove="TestImplementation\**" />
+    <None Remove="Wait! I notice `FootballStatsPage\**" />
+    <None Remove="Wait! I see `FootballStatsPage\**" />
+    <None Remove="Wait! Look at `FootballStatsPage\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="RestSharp" Version="114.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
+    <Content Remove="Looking at the provided `App.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove=".aider.chat.history.md" />
+    <None Remove=".aider.input.history" />
+    <None Remove="IntegrationToApi.csproj.Backup.tmp" />
+    <None Remove="Let%27s look at `_Host.cshtml` again" />
+    <None Remove="Let%27s look at `_Host.cshtml` again. It has" />
+    <None Remove="Let%27s think about `Index.razor` again. The field initializer" />
+    <None Remove="The first `Program.cs` provided by the user contains" />
+    <None Remove="Wait! In Blazor Server, the `App.razor` file is typically just" />
+    <None Remove="Wait, the error might be caused by `Index.razor`%27s field initializer" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="RestSharp" Version="112.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.0" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+    <!-- Added for EF Core CLI migrations -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0" PrivateAssets="all" />
   </ItemGroup>
 
   <ItemGroup>

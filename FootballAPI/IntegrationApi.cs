@@ -27,14 +27,13 @@ public class IntegrationApi : IIntegrationApi
         request.AddQueryParameter("season", input.YearOfSeason);
         request.AddHeader("x-rapidapi-key", _apiKey);
 
-        var response = await _client.GetAsync<Rootobject>(request);
+        // Use ExecuteAsync<T> to get a RestResponse<Rootobject> which contains IsSuccessStatusCode and Data
+        var response = await _client.ExecuteAsync<Rootobject>(request);
 
         if (!response.IsSuccessStatusCode)
         {
-            throw new ApiException(
-                $"API request failed with status code: {response.StatusCode}. Content: {response.Content}",
-                (int?)response.StatusCode,
-                "HTTP_ERROR"
+            throw new Exception(
+                $"API request failed with status code: {response.StatusCode}. Content: {response.Content}"
             );
         }
 

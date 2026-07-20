@@ -2,7 +2,9 @@ using API.Data;
 using API.Integration;
 using API.Mappers;
 using API.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Model;
 using Player;
 
 namespace API.Services;
