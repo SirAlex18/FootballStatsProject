@@ -1,139 +1,62 @@
-using API.Data;
-using API.Exceptions;
-using API.Integration;
-using API.Models;
-using API.Services;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
-using Player;
-using Serilog;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
-
-
-var builder = WebApplication.CreateBuilder(args);
-
-
-builder.Services.AddControllers();
-
-
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .WriteTo.Console()
-    .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
-    .CreateLogger();
-
-builder.Host.UseSerilog();
-
-// Configuration is automatically loaded from appsettings.json by the Web SDK
-builder.Services.Configure<Config>(builder.Configuration.GetSection("ApiConfig"));
-builder.Services.AddSingleton<IConfig>(sp => sp.GetRequiredService<IOptions<Config>>().Value);
-
-
-// Configure Entity Framework Core with PostgreSQL
-builder.Services.AddDbContext<FootballStatsContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-
-builder.Services.AddCors(options =>
+namespace IntegrationToApi
 {
-    options.AddPolicy("AllowReactApp", policy =>
+    public class Program
     {
-        policy.WithOrigins("http://localhost:5173", "http://localhost:3000")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
-});
+        public static void Main(string[] args)
+        {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json")
+                .Build();
 
-// Register Services
-builder.Services.AddScoped<IIntegrationApi, IntegrationApi>();
-builder.Services.AddScoped<IPlayerService, PlayerService>();
-builder.Services.AddScoped<IIntegrationApi, IntegrationApi>();
-builder.Services.AddSingleton<IConfig>(sp => new Config(builder.Configuration));
-
-var app = builder.Build();
-
-
-app.UseHttpsRedirection();
-app.UseAuthorization();
-app.MapControllers();
-
-app.UseCors("AllowReactApp");
-
-// Health & Readiness Endpoints for Docker/K8s Probes
-app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
-app.MapGet("/ready", async (FootballStatsContext context) =>
-{
-    try
-    {
-        await context.Database.CanConnectAsync();
-        return Results.Ok(new { status = "ready" });
-    }
-    catch
-    {
-        return Results.StatusCode(503);
-    }
-});
-
-// API Endpoint for Frontend - Single Player
-app.MapGet("/api/players/{id}/{season}", async (string id, string season, IPlayerService playerService) =>
-{
-    if (string.IsNullOrWhiteSpace(id) || !int.TryParse(id, out _))
-        return Results.BadRequest("Invalid Player ID. Must be numeric.");
-    
-    if (string.IsNullOrWhiteSpace(season) || season.Length != 4 || !int.TryParse(season, out _))
-        return Results.BadRequest("Invalid Season Year. Must be a 4-digit year.");
-
-    var inputData = new PlayerInputData 
-    { 
-        PlayerId = id,
-        YearOfSeason = season 
-    };
-
-    try
-    {
-        var playerStats = await playerService.GetPlayerStatsAsync(inputData);
-        
-        if (playerStats != null)
-            return Results.Ok(playerStats);
+            var host = CreateWebHostBuilder(args, configuration).Build();
             
-        return Results.NotFound("No stats found for the provided player/season.");
+            using (var scope = host.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+                
+                try
+                {
+                    var context = services.GetRequiredService<FootballStatsContext>();
+                    context.Database.EnsureCreated();
+                }
+                catch (Exception ex)
+                {
+                    var logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred while creating the database.");
+                }
+            }
+
+            host.Run();
+        }
+
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args, IConfiguration configuration)
+        {
+            return WebHost.CreateDefaultBuilder(args)
+                .UseConfiguration(configuration)
+                .ConfigureAppConfiguration((builderContext, config) =>
+                {
+                    config.AddJsonFile("appsettings.json", optional: false);
+                })
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.AddConsole();
+                })
+                .ConfigureServices(services =>
+                {
+                    services.AddControllers();
+                    
+                    services.AddDbContext<FootballStatsContext>(options =>
+                        options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+                });
+        }
     }
-    catch (ApiException apiEx)
-    {
-        return Results.Problem(
-            detail: apiEx.Message,
-            statusCode: apiEx.StatusCode ?? 500,
-            extensions: new Dictionary<string, object?> { ["errorCode"] = apiEx.ErrorCode }
-        );
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem(detail: ex.Message, statusCode: 500);
-    }
-});
-
-// API Endpoint for Frontend - Bulk Players (POST with JSON body)
-app.MapPost("/api/players/bulk", async ([FromBody] BulkPlayerRequest request, IPlayerService playerService) =>
-{
-    if (request?.Ids == null || !request.Ids.Any())
-        return Results.BadRequest("Missing 'Ids' in request body.");
-
-    if (string.IsNullOrWhiteSpace(request.Season) || request.Season.Length != 4 || !int.TryParse(request.Season, out _))
-        return Results.BadRequest("Invalid Season Year. Must be a 4-digit year.");
-
-    try
-    {
-        var playerStatsList = await playerService.GetPlayerStatsBulkAsync(request.Ids, request.Season);
-        return Results.Ok(playerStatsList);
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem(detail: ex.Message, statusCode: 500);
-    }
-});
-
-
-app.Run();
-
-public record BulkPlayerRequest(IEnumerable<string> Ids, string Season);
+}
