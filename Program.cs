@@ -1,19 +1,21 @@
 using API.Data;
+using API.Exceptions;
 using API.Integration;
 using API.Models;
 using API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-<<<<<<< HEAD
-
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddControllers();
-=======
 using Microsoft.Extensions.Options;
 using Player;
 using Serilog;
+
+
+
+var builder = WebApplication.CreateBuilder(args);
+
+
+builder.Services.AddControllers();
+
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
@@ -21,23 +23,18 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day)
     .CreateLogger();
 
-var builder = WebApplication.CreateBuilder(args);
-
 builder.Host.UseSerilog();
 
 // Configuration is automatically loaded from appsettings.json by the Web SDK
 builder.Services.Configure<Config>(builder.Configuration.GetSection("ApiConfig"));
 builder.Services.AddSingleton<IConfig>(sp => sp.GetRequiredService<IOptions<Config>>().Value);
->>>>>>> 62a3223d093aec1e543a62eb25394438af07e1b4
+
 
 // Configure Entity Framework Core with PostgreSQL
 builder.Services.AddDbContext<FootballStatsContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-<<<<<<< HEAD
-// Register application services
-=======
-// CORS Configuration for React Frontend
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
@@ -50,19 +47,17 @@ builder.Services.AddCors(options =>
 
 // Register Services
 builder.Services.AddScoped<IIntegrationApi, IntegrationApi>();
->>>>>>> 62a3223d093aec1e543a62eb25394438af07e1b4
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 builder.Services.AddScoped<IIntegrationApi, IntegrationApi>();
 builder.Services.AddSingleton<IConfig>(sp => new Config(builder.Configuration));
 
 var app = builder.Build();
 
-<<<<<<< HEAD
-// Configure the HTTP request pipeline.
+
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-=======
+
 app.UseCors("AllowReactApp");
 
 // Health & Readiness Endpoints for Docker/K8s Probes
@@ -137,7 +132,7 @@ app.MapPost("/api/players/bulk", async ([FromBody] BulkPlayerRequest request, IP
         return Results.Problem(detail: ex.Message, statusCode: 500);
     }
 });
->>>>>>> 62a3223d093aec1e543a62eb25394438af07e1b4
+
 
 app.Run();
 
