@@ -61,6 +61,7 @@
   </ItemGroup>
 
   <ItemGroup>
+<<<<<<< HEAD
     <Content Remove="Looking at the provided `App.razor" />
   </ItemGroup>
 
@@ -77,6 +78,8 @@
   </ItemGroup>
 
   <ItemGroup>
+=======
+>>>>>>> 62a3223d093aec1e543a62eb25394438af07e1b4
     <PackageReference Include="RestSharp" Version="112.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
@@ -85,8 +88,11 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="8.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
+<<<<<<< HEAD
     <!-- Added for EF Core CLI migrations -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0" PrivateAssets="all" />
+=======
+>>>>>>> 62a3223d093aec1e543a62eb25394438af07e1b4
   </ItemGroup>
 
   <ItemGroup>
