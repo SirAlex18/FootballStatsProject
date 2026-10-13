@@ -1,0 +1,70 @@
+@page "/"
+@using FootballStats.Client.Player
+@inject HttpClient Http
+
+<PageTitle>Home</PageTitle>
+
+<h1>Player Stats</h1>
+
+@if (isLoading)
+{
+    <p>Loading...</p>
+}
+else if (errorMessage != null)
+{
+    <p style="color: red;">Error: @errorMessage</p>
+}
+else if (playerData == null)
+{
+    <p>No data found.</p>
+}
+else
+{
+    <div>
+        <p><strong>Name:</strong> @playerData.PlayerName</p>
+        <p><strong>League:</strong> @playerData.League</p>
+        <p><strong>Appearances:</strong> @(playerData.Appearences ?? 0)</p>
+        <p><strong>Goals:</strong> @(playerData.Goals ?? 0)</p>
+        <p><strong>Passes:</strong> @(playerData.Passes ?? 0)</p>
+    </div>
+}
+
+@code {
+    private PlayerData? playerData;
+    private bool isLoading = true;
+    private string? errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var playerId = "123"; 
+        var season = "2023";
+        
+        try
+        {
+            // Use an absolute URL to ensure the request hits the backend API, not the client app's origin.
+            var apiUrl = $"https://localhost:63068/api/player?playerId={playerId}&season={season}";
+            
+            // Configure JSON options to ignore casing differences between API response and C# properties.
+            var jsonOptions = new System.Text.Json.JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            // Use GetFromJsonAsync with explicit options for reliable deserialization in Blazor WASM.
+            playerData = await Http.GetFromJsonAsync<PlayerData>(apiUrl, jsonOptions);
+            
+            if (playerData == null)
+            {
+                errorMessage = "Deserialization returned null. Verify API response structure matches PlayerData.";
+            }
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"HTTP Request Failed: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

@@ -364,3 +364,4 @@ FodyWeavers.xsd
 /TestImplementation/TestImplementation.csproj
 /TestImplementation/Program.cs
 .aider*
+appsettings.json
